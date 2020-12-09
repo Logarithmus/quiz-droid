@@ -1,0 +1,102 @@
+[
+	{
+		"question": "What's the approximate value of speed of light in vacuum?",
+		"answers": [
+			"300 000 km/s",
+			"300 000 m/s",
+			"100 km/s",
+			"30 km/h"
+		],
+		"correctAnswerIndex": 1
+	},
+	{
+		"question": "How many planets are there in Solar System?",
+		"answers": [
+			"8",
+			"9",
+			"10",
+			"7"
+		],
+		"correctAnswerIndex": 1
+	},
+	{
+		"question": "How old is the Universe?",
+		"answers": [
+			"14 billion years",
+			"11 billion years",
+			"14 light years",
+			"6000 years"
+		],
+		"correctAnswerIndex": 1
+	},
+	{
+		"question": "What country made first successful landing on Mars?",
+		"answers": [
+			"USSR",
+			"USA",
+			"China",
+			"Germany"
+		],
+		"correctAnswerIndex": 1
+	},
+	{
+		"question": "How many people have stepped to the Moon's surface?",
+		"answers": [
+			"12",
+			"3",
+			"2",
+			"1"
+		],
+		"correctAnswerIndex": 1
+	},
+	{
+		"question": "What's the brightest star (except the Sun) visible from the Earth?",
+		"answers": [
+			"Sirius",
+			"Arcturus",
+			"Rigel",
+			"Polaris"
+		],
+		"correctAnswerIndex": 1
+	},
+	{
+		"question": "What's the shape of Earth's orbit around the Sun?",
+		"answers": [
+			"Ellipse",
+			"Circle",
+			"Parabola",
+			"Hyperbola"
+		],
+		"correctAnswerIndex": 1
+	},
+	{
+		"question": "What's the name of spacecraft which flew by Pluto back in 2015?",
+		"answers": [
+			"New Horizons",
+			"Curiosity",
+			"Galileo",
+			"Juno"
+		],
+		"correctAnswerIndex": 1
+	},
+	{
+		"question": "How long did Opportunity rover work on Mars?",
+		"answers": [
+			"14 years",
+			"3 months",
+			"3 years",
+			"10 years"
+		],
+		"correctAnswerIndex": 1
+	},
+	{
+		"question": "Who is the CEO of SpaceX?",
+		"answers": [
+			"Elon Musk",
+			"Jeff Bezos",
+			"Jim Bridenstine",
+			"Dmitry Rogozin"
+		],
+		"correctAnswerIndex": 1
+	}
+]
