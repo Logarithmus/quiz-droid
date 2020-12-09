@@ -1,0 +1,33 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/pen_width"
+          android:icon="@drawable/ic_twotone_create_24"
+          app:showAsAction="always"
+          android:title="@string/pen_width"/>
+
+    <item android:id="@+id/pen_color"
+          android:icon="@drawable/ic_twotone_color_lens_24"
+          app:showAsAction="always"
+          android:title="@string/pen_color"/>
+
+    <item android:id="@+id/undo"
+          android:icon="@drawable/ic_twotone_undo_24"
+          app:showAsAction="always"
+          android:title="@string/undo"/>
+
+    <item android:id="@+id/redo"
+          android:icon="@drawable/ic_twotone_redo_24"
+          android:iconTint="@android:color/darker_gray"
+          app:showAsAction="always"
+          android:title="@string/redo"/>
+
+    <item android:id="@+id/eraser"
+          android:icon="@drawable/ic_twotone_clear_24"
+          app:showAsAction="always"
+          android:title="@string/eraser"/>
+
+    <item android:id="@+id/clear_screen"
+          android:icon="@drawable/ic_twotone_delete_24"
+          app:showAsAction="always"
+          android:title="@string/clear_screen"/>
+</menu>
