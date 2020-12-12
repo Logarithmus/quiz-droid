@@ -7,7 +7,7 @@
 			"100 km/s",
 			"30 km/h"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	},
 	{
 		"question": "How many planets are there in Solar System?",
@@ -17,7 +17,7 @@
 			"10",
 			"7"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	},
 	{
 		"question": "How old is the Universe?",
@@ -27,17 +27,17 @@
 			"14 light years",
 			"6000 years"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	},
 	{
-		"question": "What country made first successful landing on Mars?",
+		"question": "Which country did perform first successful landing on Mars?",
 		"answers": [
 			"USSR",
 			"USA",
 			"China",
 			"Germany"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	},
 	{
 		"question": "How many people have stepped to the Moon's surface?",
@@ -47,7 +47,7 @@
 			"2",
 			"1"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	},
 	{
 		"question": "What's the brightest star (except the Sun) visible from the Earth?",
@@ -57,7 +57,7 @@
 			"Rigel",
 			"Polaris"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	},
 	{
 		"question": "What's the shape of Earth's orbit around the Sun?",
@@ -67,7 +67,7 @@
 			"Parabola",
 			"Hyperbola"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	},
 	{
 		"question": "What's the name of spacecraft which flew by Pluto back in 2015?",
@@ -77,7 +77,7 @@
 			"Galileo",
 			"Juno"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	},
 	{
 		"question": "How long did Opportunity rover work on Mars?",
@@ -87,7 +87,7 @@
 			"3 years",
 			"10 years"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	},
 	{
 		"question": "Who is the CEO of SpaceX?",
@@ -97,6 +97,6 @@
 			"Jim Bridenstine",
 			"Dmitry Rogozin"
 		],
-		"correctAnswerIndex": 1
+		"correctAnswerIndex": 0
 	}
 ]
