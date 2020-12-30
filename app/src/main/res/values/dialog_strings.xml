@@ -2,6 +2,7 @@
 <resources>
     <string name="exit_question">Are you sure want to exit quiz?\nAll progress will be lost</string>
     <string name="finish_question">Are you sure want to finish quiz?</string>
+    <string name="firebase_failed_msg">Failed to retrieve questions from Firebase! Exiting…</string>
     <string name="results">Results:</string>
     <string name="ok">OK</string>
     <string name="yes">Yes</string>

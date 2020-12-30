@@ -9,6 +9,8 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID"
+                   android:value="ca-app-pub-6965567956295375~1495352835"/>
         <activity android:name="dev.logarithmus.quizdroid.MainActivity"
                   android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>

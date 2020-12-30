@@ -1,15 +1,25 @@
 package dev.logarithmus.quizdroid
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 import dev.logarithmus.quizdroid.databinding.ActivityMainBinding
 import dev.logarithmus.quizdroid.dialogs.ExitDialogFragment
 import dev.logarithmus.quizdroid.dialogs.FinishDialogFragment
+import dev.logarithmus.quizdroid.dialogs.FirebaseFailedDialogFragment
 import dev.logarithmus.quizdroid.dialogs.ResultsDialogFragment
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -21,9 +31,9 @@ class MainActivity: AppCompatActivity(),
 
     @Serializable
     class Question(
-        var question: String,
-        var answers: MutableList<String>,
-        var correctAnswerIndex: Int
+        var question: String = "",
+        var answers: MutableList<String> = mutableListOf(""),
+        var correctAnswerIndex: Int = 0
     ) {
         fun shuffleAnswers() {
             answers = answers.mapIndexed { i, ans -> Pair(i, ans) }.shuffled().also {
@@ -38,6 +48,7 @@ class MainActivity: AppCompatActivity(),
     private lateinit var questions: MutableList<Question>
     private lateinit var userAnswers: MutableList<Int?>
     private var isReviewMode = false
+    private lateinit var mInterstitialAd: InterstitialAd
     
     private fun View.setVisibility(f: Boolean) {
         visibility = if (f) { View.VISIBLE } else { View.INVISIBLE }
@@ -55,19 +66,47 @@ class MainActivity: AppCompatActivity(),
         super.onCreate(savedInstanceState)
         activity = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activity.root)
-        questions = loadQuestionsFromFile("quiz.json")
-        questionCount = questions.size
-        userAnswers = MutableList(questionCount) { null }
-        shuffleQuestions(questions)
-        showCurrentQuestion()
-        activity.answersRadioGroup.setOnCheckedChangeListener{
-            group, _ -> userAnswers[questionIndex] = group.checkedIndex
-        }
+
+        MobileAds.initialize(this) {}
+        mInterstitialAd = InterstitialAd(this)
+        mInterstitialAd.adUnitId = getString(R.string.ad_unit_id)
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
+
+        //questions = loadQuestionsFromFile("quiz.json")
+        loadQuestionsFromFirebase(getString(R.string.firebase_url))
+    }
+    
+    private fun onQuestionsFromFirebaseLoaded(questions: List<Question>?) {
+        Log.e("[FIREBASE]", questions.toString())
+        questions?.let {
+            this.questions = it.toMutableList()
+            questionCount = this.questions.size
+            userAnswers = MutableList(questionCount) { null }
+            shuffleQuestions(this.questions)
+            showCurrentQuestion()
+            activity.answersRadioGroup.setOnCheckedChangeListener { group, _ ->
+                userAnswers[questionIndex] = group.checkedIndex
+            }
+        } ?: FirebaseFailedDialogFragment().show(supportFragmentManager, "FirebaseFailedDialog")
     }
 
-    private fun loadQuestionsFromFile(name: String): MutableList<Question> {
+    private fun loadQuestionsFromFile(name: String): List<Question> {
         val json = File(applicationContext.getExternalFilesDir(null), name).readText()
         return Json.decodeFromString<ArrayList<Question>>(json)
+    }
+
+    private fun loadQuestionsFromFirebase(url: String) {
+        Firebase.database(url).reference.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                Log.e("[FIREBASE]", snapshot.getValue<List<Any>>().toString())
+                Log.e("[FIREBASE]", snapshot.getValue<List<Question>>().toString())
+                onQuestionsFromFirebaseLoaded(snapshot.getValue<List<Question>>())
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("[FIREBASE]", "loadQuestions:onCancelled", error.toException())
+            }
+        })
     }
 
     private fun shuffleQuestions(questions: MutableList<Question>) {
@@ -86,7 +125,7 @@ class MainActivity: AppCompatActivity(),
             answersRadioGroup.removeAllViews()
             question.answers.forEach{
                 answersRadioGroup.addView(
-                    RadioButton(this@MainActivity).apply{
+                    RadioButton(this@MainActivity).apply {
                         text = it
                         isClickable = !isReviewMode
                     }
@@ -115,24 +154,24 @@ class MainActivity: AppCompatActivity(),
         (correctView as RadioButton).setTextColor(0xFF009F6B.toInt()) // NCS Green
     }
     
-    fun onClickPrevQuestion(view: View) {
+    fun onClickPrevQuestion(@Suppress("UNUSED_PARAMETER") view: View) {
         questionIndex -= 1
         showCurrentQuestion()
     }
 
-    fun onClickNextQuestion(view: View) {
+    fun onClickNextQuestion(@Suppress("UNUSED_PARAMETER") view: View) {
         questionIndex += 1
         showCurrentQuestion()
     }
 
-    fun onClickExit(view: View) {
+    fun onClickExit(@Suppress("UNUSED_PARAMETER") view: View) {
         ExitDialogFragment().show(supportFragmentManager, "ExitDialog")
     }
 
-    fun onClickFinish(view: View) {
+    fun onClickFinish(@Suppress("UNUSED_PARAMETER") view: View) {
         FinishDialogFragment().show(supportFragmentManager, "FinishDialog")
     }
-    
+
     override fun finishQuiz() {
         val correctCount = userAnswers.zip(questions).count {
             it.first == it.second.correctAnswerIndex
@@ -144,5 +183,10 @@ class MainActivity: AppCompatActivity(),
         isReviewMode = true
         questionIndex = 0
         showCurrentQuestion()
+        if (mInterstitialAd.isLoaded) {
+            mInterstitialAd.show()
+        } else {
+            Log.d("[ADS]", "The interstitial wasn't loaded yet.")
+        }
     }
 }

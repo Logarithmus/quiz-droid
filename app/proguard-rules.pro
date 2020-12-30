@@ -39,3 +39,13 @@
 -keepclasseswithmembers class dev.logarithmus.quizdroid.** { # <-- change package name to your app's
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+# Add this global rule
+-keepattributes Signature
+
+# This rule will properly ProGuard all the model classes in
+# the package com.yourcompany.models. Modify to fit the structure
+# of your app.
+-keepclassmembers class dev.logarithmus.quizdroid.models.** {
+  *;
+}

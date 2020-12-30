@@ -1,4 +1,7 @@
 <resources>
+    <!-- Full-screen ad -->
+    <string name="ad_unit_id">ca-app-pub-3940256099942544/8691691433</string>
+    <string name="firebase_url">https://quiz-droid-8f498-default-rtdb.europe-west1.firebasedatabase.app</string>
     <string name="app_name">QuizDroid</string>
     <string name="prev">Prev</string>
     <string name="next">Next</string>
