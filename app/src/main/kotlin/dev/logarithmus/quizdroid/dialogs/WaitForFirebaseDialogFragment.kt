@@ -8,7 +8,7 @@ import androidx.fragment.app.DialogFragment
 import dev.logarithmus.quizdroid.R
 import kotlin.system.exitProcess
 
-class ExitDialogFragment: DialogFragment() {
+class WaitForFirebaseDialogFragment: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
             AlertDialog.Builder(it)

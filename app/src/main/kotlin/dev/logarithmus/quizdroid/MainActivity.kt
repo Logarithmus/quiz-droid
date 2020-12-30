@@ -12,44 +12,40 @@ import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import dev.logarithmus.quizdroid.databinding.ActivityMainBinding
-import dev.logarithmus.quizdroid.dialogs.ExitDialogFragment
+import dev.logarithmus.quizdroid.dialogs.WaitForFirebaseDialogFragment
 import dev.logarithmus.quizdroid.dialogs.FinishDialogFragment
 import dev.logarithmus.quizdroid.dialogs.FirebaseFailedDialogFragment
 import dev.logarithmus.quizdroid.dialogs.ResultsDialogFragment
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import java.io.File
 
-class MainActivity: AppCompatActivity(),
-    FinishDialogFragment.FinishDialogListener {
+class MainActivity: AppCompatActivity(), FinishDialogFragment.FinishDialogListener {
 
-    @Serializable
     class Question(
         var question: String = "",
-        var answers: MutableList<String> = mutableListOf(""),
+        var answers: MutableList<String> = mutableListOf(),
         var correctAnswerIndex: Int = 0
     ) {
         fun shuffleAnswers() {
             answers = answers.mapIndexed { i, ans -> Pair(i, ans) }.shuffled().also {
                 correctAnswerIndex = it.indexOfFirst { it.first == correctAnswerIndex }
-            }.map { it.second }.toMutableList()
+            }.map{ it.second }.toMutableList()
         }
     }
-    
+
     private lateinit var activity: ActivityMainBinding
+    private lateinit var mInterstitialAd: InterstitialAd
+
     private var questionIndex = 0
     private var questionCount = 1
     private lateinit var questions: MutableList<Question>
     private lateinit var userAnswers: MutableList<Int?>
     private var isReviewMode = false
-    private lateinit var mInterstitialAd: InterstitialAd
-    
+
     private fun View.setVisibility(f: Boolean) {
         visibility = if (f) { View.VISIBLE } else { View.INVISIBLE }
     }
@@ -62,22 +58,25 @@ class MainActivity: AppCompatActivity(),
             }
         }
 
+    private val thisApp: QuizDroidApp
+        get() = application as QuizDroidApp
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activity.root)
+        loadAds(getString(R.string.ad_unit_id))
+        loadQuestionsFromFirebase()
+    }
 
+    private fun loadAds(adUnitId: String) {
         MobileAds.initialize(this) {}
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = getString(R.string.ad_unit_id)
+        mInterstitialAd.adUnitId = adUnitId
         mInterstitialAd.loadAd(AdRequest.Builder().build())
-
-        //questions = loadQuestionsFromFile("quiz.json")
-        loadQuestionsFromFirebase(getString(R.string.firebase_url))
     }
     
-    private fun onQuestionsFromFirebaseLoaded(questions: List<Question>?) {
-        Log.e("[FIREBASE]", questions.toString())
+    private fun onQuestionsLoaded(questions: List<Question>?) {
         questions?.let {
             this.questions = it.toMutableList()
             questionCount = this.questions.size
@@ -90,21 +89,15 @@ class MainActivity: AppCompatActivity(),
         } ?: FirebaseFailedDialogFragment().show(supportFragmentManager, "FirebaseFailedDialog")
     }
 
-    private fun loadQuestionsFromFile(name: String): List<Question> {
-        val json = File(applicationContext.getExternalFilesDir(null), name).readText()
-        return Json.decodeFromString<ArrayList<Question>>(json)
-    }
-
-    private fun loadQuestionsFromFirebase(url: String) {
-        Firebase.database(url).reference.addListenerForSingleValueEvent(object: ValueEventListener {
+    private fun loadQuestionsFromFirebase() {
+        activity.questionText.text = getString(R.string.loading)
+        thisApp.db.reference.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                Log.e("[FIREBASE]", snapshot.getValue<List<Any>>().toString())
-                Log.e("[FIREBASE]", snapshot.getValue<List<Question>>().toString())
-                onQuestionsFromFirebaseLoaded(snapshot.getValue<List<Question>>())
+                onQuestionsLoaded(snapshot.getValue<ArrayList<Question>>())
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.w("[FIREBASE]", "loadQuestions:onCancelled", error.toException())
+                Log.e("[FIREBASE]", "loadQuestions:onCancelled", error.toException())
             }
         })
     }
@@ -115,7 +108,7 @@ class MainActivity: AppCompatActivity(),
             forEach{ it.shuffleAnswers() }
         }
     }
-    
+
     @SuppressLint("SetTextI18n")
     private fun showCurrentQuestion() {
         val question = questions[questionIndex]
@@ -165,7 +158,7 @@ class MainActivity: AppCompatActivity(),
     }
 
     fun onClickExit(@Suppress("UNUSED_PARAMETER") view: View) {
-        ExitDialogFragment().show(supportFragmentManager, "ExitDialog")
+        WaitForFirebaseDialogFragment().show(supportFragmentManager, "ExitDialog")
     }
 
     fun onClickFinish(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -178,7 +171,7 @@ class MainActivity: AppCompatActivity(),
         }
         ResultsDialogFragment(correctCount, questionCount)
                 .show(supportFragmentManager, "ResultsDialog")
-        activity.finishButton.text = "Restart"
+        activity.finishButton.text = getString(R.string.restart)
         activity.finishButton.setOnClickListener { recreate() }
         isReviewMode = true
         questionIndex = 0
